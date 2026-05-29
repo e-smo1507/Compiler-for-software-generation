@@ -1,30 +1,28 @@
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 
+import prisma from "./lib/prisma";
+
 import { generateIntent } from "./pipeline/intent/generateIntent";
-
 import { generateDesign } from "./pipeline/design/generateDesign";
-
 import { generateDB } from "./pipeline/schema/generateDB";
-
 import { generateAPI } from "./pipeline/schema/generateAPI";
-
 import { generateUI } from "./pipeline/schema/generateUI";
 
 import { validateApiDb } from "./pipeline/validation/validateApiDb";
-
 import { repairDB } from "./pipeline/repair/repairDb";
 
 import { generatePrismaSchema } from "./pipeline/runtime/generatePrisma";
-
 import { writePrismaFile } from "./pipeline/runtime/writePrisma";
-
 import { runMigration } from "./pipeline/runtime/runMigration";
 
 import {
   setRuntimeRoutes,
-  runtimeRoutes
+  getRuntimeRoutes
 } from "./pipeline/runtime/runtimeStore";
+
+import { executeRuntimeRoute }
+from "./pipeline/runtime/executeRuntimeRoute";
 
 const app = Fastify();
 
@@ -39,7 +37,20 @@ const startServer = async () => {
   });
 
   // =========================
-  // MAIN PIPELINE ROUTE
+  // HEALTH ROUTE
+  // =========================
+
+  app.get("/", async () => {
+
+    return {
+      success: true,
+      message: "AI App Compiler Backend Running"
+    };
+
+  });
+
+  // =========================
+  // GENERATE PIPELINE
   // =========================
 
   app.post("/generate", async (request, reply) => {
@@ -58,10 +69,10 @@ const startServer = async () => {
       console.log("[Intent] Generating intent...");
       console.log("=========================");
 
-      const intent = await generateIntent(body.prompt);
+      const intent =
+        await generateIntent(body.prompt);
 
       console.log("[Intent] Success");
-
 
       // =========================
       // STAGE 2 — DESIGN
@@ -71,10 +82,10 @@ const startServer = async () => {
       console.log("[Design] Generating design...");
       console.log("=========================");
 
-      const design = await generateDesign(intent);
+      const design =
+        await generateDesign(intent);
 
       console.log("[Design] Success");
-
 
       // =========================
       // STAGE 3 — DB SCHEMA
@@ -84,10 +95,10 @@ const startServer = async () => {
       console.log("[DB] Generating DB schema...");
       console.log("=========================");
 
-      const db = await generateDB(design);
+      const db =
+        await generateDB(design);
 
       console.log("[DB] Success");
-
 
       // =========================
       // STAGE 4 — GENERATE PRISMA
@@ -104,7 +115,6 @@ const startServer = async () => {
 
       console.log("[Prisma] schema.prisma created");
 
-
       // =========================
       // STAGE 5 — RUN MIGRATION
       // =========================
@@ -117,7 +127,6 @@ const startServer = async () => {
 
       console.log("[Prisma] Migration completed");
 
-
       // =========================
       // STAGE 6 — API SCHEMA
       // =========================
@@ -126,10 +135,23 @@ const startServer = async () => {
       console.log("[API] Generating API schema...");
       console.log("=========================");
 
-      const api = await generateAPI(design);
+      const api =
+        await generateAPI(design);
 
       console.log("[API] Success");
 
+      // =========================
+      // SAVE RUNTIME ROUTES
+      // =========================
+
+      setRuntimeRoutes(api.routes || []);
+
+      console.log("[Runtime] Routes saved");
+
+      console.log(
+        "[Runtime] Current Routes:",
+        getRuntimeRoutes()
+      );
 
       // =========================
       // STAGE 7 — UI SCHEMA
@@ -139,24 +161,25 @@ const startServer = async () => {
       console.log("[UI] Generating UI schema...");
       console.log("=========================");
 
-      const ui = await generateUI(design);
+      const ui =
+        await generateUI(design);
 
       console.log("[UI] Success");
-
 
       // =========================
       // STAGE 8 — VALIDATION
       // =========================
 
       console.log("\n=========================");
-      console.log("[Validation] Checking API ↔ DB consistency...");
+      console.log(
+        "[Validation] Checking API ↔ DB consistency..."
+      );
       console.log("=========================");
 
       const validationErrors =
         validateApiDb(api, db);
 
       console.log("[Validation] Completed");
-
 
       // =========================
       // STAGE 9 — REPAIR ENGINE
@@ -190,27 +213,14 @@ const startServer = async () => {
 
       }
 
-
-      // =========================
-      // STAGE 10 — RUNTIME EXECUTION
-      // =========================
-
-      console.log("\n=========================");
-      console.log("[Runtime] Saving runtime routes...");
-      console.log("=========================");
-
-      setRuntimeRoutes(api.routes || []);
-
-      console.log("[Runtime] Runtime routes saved");
-
-
       // =========================
       // FINAL RESPONSE
       // =========================
 
       return {
 
-        success: validationErrors.length === 0,
+        success:
+          validationErrors.length === 0,
 
         repairApplied,
 
@@ -238,7 +248,8 @@ const startServer = async () => {
 
           migrationExecuted: true,
 
-          runtimeRoutes: runtimeRoutes.length
+          runtimeRoutes:
+            getRuntimeRoutes().length
 
         }
 
@@ -256,75 +267,192 @@ const startServer = async () => {
 
         success: false,
 
-        error: error.message || "Internal Server Error"
+        error:
+          error.message ||
+          "Internal Server Error"
 
       });
 
     }
 
   });
-
 
   // =========================
   // DYNAMIC RUNTIME ROUTES
   // =========================
 
-  app.all("/api/*", async (request, reply) => {
+  app.all("/runtime/*", async (request, reply) => {
 
-    const url = request.url;
+    try {
 
-    const method = request.method;
+      const url =
+        request.url.replace("/runtime", "");
 
-    const route = runtimeRoutes.find((r: any) => {
+      const method =
+        request.method.toUpperCase();
 
-      return (
-        r.path === url &&
-        r.method.toUpperCase() === method.toUpperCase()
-      );
+      const routes =
+        getRuntimeRoutes();
 
-    });
+      console.log("\n=========================");
+      console.log("[Runtime] Incoming Request");
+      console.log("=========================");
 
-    if (!route) {
+      console.log("Method:", method);
+      console.log("URL:", url);
 
-      return reply.status(404).send({
+      console.log("\n[Runtime] Available Routes:");
+      console.log(routes);
+
+      const matchedRoute =
+        routes.find((route: any) => {
+
+          return (
+            route.path.toLowerCase() ===
+              url.toLowerCase()
+            &&
+            route.method.toUpperCase() ===
+              method
+          );
+
+        });
+
+      // =========================
+      // ROUTE NOT FOUND
+      // =========================
+
+      if (!matchedRoute) {
+
+        return reply.status(404).send({
+
+          success: false,
+
+          message:
+            "Dynamic route not found",
+
+          requested: {
+            method,
+            url
+          },
+
+          availableRoutes: routes
+
+        });
+
+      }
+
+      // =========================
+      // DYNAMIC DATABASE EXECUTION
+      // =========================
+
+      const body =
+        request.body as any;
+
+      const data =
+        await executeRuntimeRoute(
+          matchedRoute,
+          method,
+          body
+        );
+
+      // =========================
+      // SUCCESS RESPONSE
+      // =========================
+
+      return {
+
+        success: true,
+
+        message:
+          "Dynamic runtime route working",
+
+        runtimeRoute: matchedRoute,
+
+        data
+
+      };
+
+    } catch (error: any) {
+
+      console.error(error);
+
+      return reply.status(500).send({
 
         success: false,
 
-        message: "Dynamic route not found"
+        error: error.message
 
       });
 
     }
 
-    return {
-
-      success: true,
-
-      message: "Dynamic route executed",
-
-      route
-
-    };
-
   });
 
-
   // =========================
-  // HEALTH ROUTE
+  // SHOW ALL RUNTIME ROUTES
   // =========================
 
-  app.get("/", async () => {
+  app.get("/runtime-routes", async () => {
 
     return {
 
       success: true,
 
-      message: "AI App Compiler Backend Running"
+      routes: getRuntimeRoutes()
 
     };
 
   });
 
+  // =========================
+  // TEST DATABASE ROUTE
+  // =========================
+
+  app.get("/db-test", async () => {
+
+    const users =
+      await prisma.users.findMany();
+
+    return {
+
+      success: true,
+
+      users
+
+    };
+
+  });
+
+  // =========================
+  // CREATE TEST USER
+  // =========================
+
+  app.post("/create-user", async (request) => {
+
+    const body = request.body as {
+      email: string;
+      name: string;
+    };
+
+    const user =
+      await prisma.users.create({
+
+        data: {
+          email: body.email,
+          name: body.name
+        }
+
+      });
+
+    return {
+
+      success: true,
+
+      user
+
+    };
+
+  });
 
   // =========================
   // START SERVER
@@ -341,7 +469,41 @@ const startServer = async () => {
     console.log("====================================");
 
     console.log("POST:");
-    console.log("http://localhost:4000/generate");
+    console.log(
+      "http://localhost:4000/generate"
+    );
+
+    console.log("\nRUNTIME APIs:");
+    console.log(
+      "GET http://localhost:4000/runtime/users"
+    );
+
+    console.log(
+      "POST http://localhost:4000/runtime/users"
+    );
+
+    console.log(
+      "PUT http://localhost:4000/runtime/users"
+    );
+
+    console.log(
+      "DELETE http://localhost:4000/runtime/users"
+    );
+
+    console.log("\nSHOW ROUTES:");
+    console.log(
+      "GET http://localhost:4000/runtime-routes"
+    );
+
+    console.log("\nDATABASE TEST:");
+    console.log(
+      "GET http://localhost:4000/db-test"
+    );
+
+    console.log("\nCREATE USER:");
+    console.log(
+      "POST http://localhost:4000/create-user"
+    );
 
     console.log("====================================\n");
 

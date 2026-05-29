@@ -1,5 +1,20 @@
-export let runtimeRoutes: any[] = [];
+const runtimeState = {
+  routes: [] as any[]
+};
 
 export function setRuntimeRoutes(routes: any[]) {
-  runtimeRoutes = routes;
+
+  runtimeState.routes = routes;
+
+  console.log(
+    "[RuntimeStore] Saved Routes:",
+    runtimeState.routes
+  );
+
+}
+
+export function getRuntimeRoutes() {
+
+  return runtimeState.routes;
+
 }
