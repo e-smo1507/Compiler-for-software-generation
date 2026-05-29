@@ -1,41 +1,24 @@
-import { openai } from "../../utils/openai";
-import { DesignSchema } from "../../schemas/design.schema";
-
 export async function generateDesign(intent: any) {
 
-  const response = await openai.chat.completions.create({
+  console.log("[Mock AI] Generating design");
 
-    model: "gpt-4.1-mini",
+  return {
 
-    temperature: 0.1,
+    entities: [
+      "User",
+      "Subscription"
+    ],
 
-    messages: [
-      {
-        role: "system",
+    flows: [
+      "login",
+      "upgrade_plan"
+    ],
 
-        content: `
-You are a senior software architect.
+    permissions: {
+      admin: ["*"],
+      user: ["read"]
+    }
 
-Convert application intent into:
+  };
 
-- entities
-- user flows
-- permissions
-
-Return ONLY valid JSON.
-`
-      },
-
-      {
-        role: "user",
-        content: JSON.stringify(intent)
-      }
-    ]
-  });
-
-  const text = response.choices?.[0]?.message?.content || "{}";
-
-  const parsed = JSON.parse(text);
-
-  return DesignSchema.parse(parsed);
 }

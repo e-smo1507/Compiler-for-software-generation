@@ -1,49 +1,23 @@
-import { openai } from "../../utils/openai";
-
 export async function generateAPI(design: any) {
 
-  const response = await openai.chat.completions.create({
+  console.log("[Mock AI] Generating API schema");
 
-    model: "gpt-4.1-mini",
+  return {
 
-    temperature: 0.1,
+    routes: [
 
-    messages: [
       {
-        role: "system",
-
-       content: `
-Generate API schema.
-
-Return ONLY valid JSON.
-
-Example:
-
-{
-  "routes": [
-    {
-      "path": "/users",
-
-      "method": "POST",
-
-      "request": {
-        "email": "string",
-        "phone": "string"
-      }
-    }
-  ]
-}
-`
+        path: "/users",
+        method: "GET"
       },
 
       {
-        role: "user",
-        content: JSON.stringify(design)
+        path: "/users",
+        method: "POST"
       }
+
     ]
-  });
 
-  const text = response.choices?.[0]?.message?.content || "{}";
+  };
 
-  return JSON.parse(text);
 }

@@ -1,61 +1,39 @@
-import { openai } from "../../utils/openai";
+export async function generateUI(design: any) {
 
-export async function generateUI(
-  design: any
-) {
+  console.log("[Mock AI] Generating UI schema");
 
-  const response =
-    await openai.chat.completions.create({
+  return {
 
-      model: "gpt-4.1-mini",
+    pages: [
 
-      temperature: 0.1,
+      {
+        name: "Dashboard",
 
-      messages: [
+        components: [
 
-        {
-          role: "system",
+          {
+            type: "Card",
 
-          content: `
-Generate UI schema.
+            props: {
+              title: "Total Users",
+              value: "120"
+            }
+          },
 
-Return ONLY valid JSON.
+          {
+            type: "Table",
 
-Example:
-
-{
-  "pages": [
-    {
-      "name": "Dashboard",
-
-      "components": [
-        {
-          "type": "StatsCard",
-
-          "props": {
-            "title": "Revenue"
+            props: {
+              columns: ["name", "email"]
+            }
           }
-        }
-      ]
-    }
-  ]
-}
-`
-        },
 
-        {
-          role: "user",
+        ]
 
-          content: JSON.stringify(design)
-        }
+      }
 
-      ]
+    ]
 
-    });
-
-  const text =
-    response.choices?.[0]?.message?.content || "{}";
-
-  return JSON.parse(text);
+  };
 
 }

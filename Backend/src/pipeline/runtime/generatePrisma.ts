@@ -1,4 +1,4 @@
-export async function generatePrismaSchema(db: any) {
+export async function generatePrismaSchema(db: any): Promise<string> {
 
   let schema = `
 // =========================
@@ -23,6 +23,9 @@ datasource db {
 
   tables.forEach((table: any) => {
 
+    // Convert table name to model name
+    // users -> Users
+
     const modelName =
       table.name.charAt(0).toUpperCase() +
       table.name.slice(1);
@@ -37,6 +40,11 @@ model ${modelName} {
 
     fields.forEach((field: any) => {
 
+      // Prevent duplicate id field
+      if (field.name.toLowerCase() === "id") {
+        return;
+      }
+
       schema += `  ${field.name} ${mapPrismaType(field.type)}\n`;
 
     });
@@ -48,18 +56,22 @@ model ${modelName} {
   return schema;
 }
 
-function mapPrismaType(type: string) {
+function mapPrismaType(type: string): string {
 
-  switch (type) {
+  switch (type.toLowerCase()) {
 
     case "string":
       return "String";
 
     case "number":
+    case "int":
       return "Int";
 
     case "boolean":
       return "Boolean";
+
+    case "float":
+      return "Float";
 
     default:
       return "String";

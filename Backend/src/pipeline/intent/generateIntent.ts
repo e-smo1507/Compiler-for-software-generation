@@ -1,34 +1,31 @@
-import { openai } from "../../utils/openai";
 import { IntentSchema } from "../../schemas/intent.schema";
 
 export async function generateIntent(prompt: string) {
 
-  const response = await openai.chat.completions.create({
-    model: "gpt-4.1-mini",
+  console.log("[Mock AI] Generating intent");
 
-    temperature: 0.1,
+  const mockIntent = {
 
-    messages: [
-      {
-        role: "system",
+    app_type: "CRM",
 
-        content: `
-You are an intent extraction engine.
+    modules: [
+      "auth",
+      "payments",
+      "dashboard"
+    ],
 
-Return ONLY valid JSON.
-`
-      },
+    roles: [
+      "admin",
+      "user"
+    ],
 
-      {
-        role: "user",
-        content: prompt
-      }
-    ]
-  });
+    requirements: {
+      authentication: true,
+      payments: true
+    }
 
-  const text = response.choices?.[0]?.message?.content || "{}";
+  };
 
-  const parsed = JSON.parse(text);
+  return IntentSchema.parse(mockIntent);
 
-  return IntentSchema.parse(parsed);
 }
