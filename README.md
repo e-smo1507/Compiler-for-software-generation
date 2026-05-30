@@ -30,37 +30,25 @@ while validating and repairing inconsistencies automatically.
 
 System Architecture
 User Prompt
-      │
-      ▼
-│ Intent Extraction  │
-      │
-      ▼
-│ System Design      │
-      │
-      ▼
-│ Schema Generation  │
-│                    │
-│ • UI Schema        │
-│ • API Schema       │
-│ • DB Schema        │
-│ • Auth Rules       │
-      │
-      ▼
+    
+ Intent Extraction  
+ 
+ System Design      
+   
+ Schema Generation  
+                  
+  • UI Schema        
+  • API Schema       
+  • DB Schema        
+  • Auth Rules       
+     
+ Validation Engine  
 
-│ Validation Engine  │
+ Repair Engine     
 
-      │
-      ▼
+ Runtime Generator  
 
-│ Repair Engine      │
-
-      │
-      ▼
-
-│ Runtime Generator  │
-
-      │
-      ▼
+ 
  Executable App 
 
 
