@@ -6,9 +6,9 @@ export function validateSystem(uiSchema: any, apiSchema: any, dbSchema: any) {
 
   const errors: string[] = [];
 
-  // -----------------------------
+  
   // 1. Collect DB fields
-  // -----------------------------
+  
   const dbFields = new Set<string>();
 
   for (const table of dbSchema.tables) {
@@ -17,9 +17,9 @@ export function validateSystem(uiSchema: any, apiSchema: any, dbSchema: any) {
     }
   }
 
-  // -----------------------------
+  
   // 2. Check API → DB mismatch
-  // -----------------------------
+
   for (const route of apiSchema.routes) {
     const urlParts = route.path.split("/");
 
@@ -34,9 +34,9 @@ export function validateSystem(uiSchema: any, apiSchema: any, dbSchema: any) {
     }
   }
 
-  // -----------------------------
+ 
   // 3. Check UI → API mismatch
-  // -----------------------------
+ 
   for (const page of uiSchema.pages) {
     const route = page.route;
 
@@ -49,9 +49,9 @@ export function validateSystem(uiSchema: any, apiSchema: any, dbSchema: any) {
     }
   }
 
-  // -----------------------------
+ 
   // RESULT
-  // -----------------------------
+  
   if (errors.length > 0) {
     log("validation", "failed", errors);
     return { valid: false, errors };

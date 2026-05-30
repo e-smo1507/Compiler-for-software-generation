@@ -9,9 +9,8 @@ export async function repairSystem(validationResult: any, dbSchema: any, apiSche
   let updatedAPI = apiSchema;
   let updatedUI = uiSchema;
 
-  // -----------------------------
   // 1. Fix DB issues
-  // -----------------------------
+ 
   for (const error of errors) {
     if (error.includes("DB")) {
       log("repair", "fixing DB issue", error);
@@ -26,9 +25,9 @@ export async function repairSystem(validationResult: any, dbSchema: any, apiSche
     }
   }
 
-  // -----------------------------
+
   // 2. Fix API issues
-  // -----------------------------
+ 
   for (const error of errors) {
     if (error.includes("API")) {
       log("repair", "fixing API issue", error);
@@ -41,9 +40,9 @@ export async function repairSystem(validationResult: any, dbSchema: any, apiSche
     }
   }
 
-  // -----------------------------
+  
   // 3. Fix UI issues
-  // -----------------------------
+ 
   for (const error of errors) {
     if (error.includes("UI")) {
       log("repair", "fixing UI issue", error);

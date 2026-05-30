@@ -15,7 +15,7 @@ export function validateApiDb(api: any, db: any) {
 
   const errors: string[] = [];
 
-  // validate API request fields
+  // validte API rquest fields
   api.routes.forEach((route: any) => {
 
     const request = route.request || {};

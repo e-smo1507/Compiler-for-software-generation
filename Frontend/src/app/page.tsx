@@ -39,9 +39,8 @@ export default function Home() {
   const [progress, setProgress] =
     useState(0);
 
-  // =========================
+  
   // USER STATES
-  // =========================
 
   const [users, setUsers] =
     useState<any[]>([]);
@@ -52,9 +51,8 @@ export default function Home() {
   const [name, setName] =
     useState("");
 
-  // =========================
+ 
   // ADD LOG
-  // =========================
 
   const addLog = (message: string) => {
 
@@ -62,9 +60,8 @@ export default function Home() {
 
   };
 
-  // =========================
+  
   // GENERATE APP
-  // =========================
 
   const generateApp = async () => {
 
@@ -119,9 +116,8 @@ export default function Home() {
 
       addLog("Runtime routes registered");
 
-      // =========================
+      
       // FETCH RUNTIME ROUTES
-      // =========================
 
       const routesResponse = await fetch(
         "http://localhost:4000/runtime-routes"
@@ -132,9 +128,8 @@ export default function Home() {
 
       setRuntimeRoutes(routesData);
 
-      // =========================
+   
       // LOAD USERS
-      // =========================
 
       await loadUsers();
 
@@ -158,9 +153,8 @@ export default function Home() {
 
   };
 
-  // =========================
+
   // TEST RUNTIME API
-  // =========================
 
   const testRuntimeApi = async () => {
 
@@ -190,9 +184,8 @@ export default function Home() {
 
   };
 
-  // =========================
+
   // CREATE USER
-  // =========================
 
   const createUser = async () => {
 
@@ -238,9 +231,8 @@ export default function Home() {
 
   };
 
-  // =========================
+
   // LOAD USERS
-  // =========================
 
   const loadUsers = async () => {
 
@@ -696,9 +688,8 @@ export default function Home() {
 
 }
 
-// =========================
+
 // PIPELINE CARD
-// =========================
 
 function PipelineCard({
   title,
@@ -728,9 +719,8 @@ function PipelineCard({
 
 }
 
-// =========================
+
 // STATUS CARD
-// =========================
 
 function StatusCard({
   icon,

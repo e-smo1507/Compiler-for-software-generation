@@ -6,9 +6,9 @@ export const executeRuntimeRoute = async (
   body: any
 ) => {
 
-  // =========================
+ 
   // GET MODEL NAME
-  // =========================
+ 
 
   const modelName =
     route.path.replace("/", "");
@@ -28,9 +28,6 @@ export const executeRuntimeRoute = async (
 
   }
 
-  // =========================
-  // GET
-  // =========================
 
   if (method === "GET") {
 
@@ -38,9 +35,7 @@ export const executeRuntimeRoute = async (
 
   }
 
-  // =========================
-  // POST
-  // =========================
+
 
   if (method === "POST") {
 
@@ -52,9 +47,6 @@ export const executeRuntimeRoute = async (
 
   }
 
-  // =========================
-  // PUT
-  // =========================
 
   if (method === "PUT") {
 
@@ -69,10 +61,6 @@ export const executeRuntimeRoute = async (
     });
 
   }
-
-  // =========================
-  // DELETE
-  // =========================
 
   if (method === "DELETE") {
 

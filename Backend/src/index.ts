@@ -28,17 +28,17 @@ const app = Fastify();
 
 const startServer = async () => {
 
-  // =========================
+ 
   // ENABLE CORS
-  // =========================
+ 
 
   await app.register(cors, {
     origin: true
   });
 
-  // =========================
+ 
   // HEALTH ROUTE
-  // =========================
+  
 
   app.get("/", async () => {
 
@@ -49,9 +49,9 @@ const startServer = async () => {
 
   });
 
-  // =========================
+ 
   // GENERATE PIPELINE
-  // =========================
+ 
 
   app.post("/generate", async (request, reply) => {
 
@@ -61,10 +61,9 @@ const startServer = async () => {
         prompt: string;
       };
 
-      // =========================
-      // STAGE 1 — INTENT
-      // =========================
 
+      //— INTENT
+    
       console.log("\n=========================");
       console.log("[Intent] Generating intent...");
       console.log("=========================");
@@ -74,9 +73,9 @@ const startServer = async () => {
 
       console.log("[Intent] Success");
 
-      // =========================
-      // STAGE 2 — DESIGN
-      // =========================
+      
+      //DESIGN
+      
 
       console.log("\n=========================");
       console.log("[Design] Generating design...");
@@ -87,9 +86,9 @@ const startServer = async () => {
 
       console.log("[Design] Success");
 
-      // =========================
-      // STAGE 3 — DB SCHEMA
-      // =========================
+    
+      // DB SCHEMA
+    
 
       console.log("\n=========================");
       console.log("[DB] Generating DB schema...");
@@ -100,9 +99,8 @@ const startServer = async () => {
 
       console.log("[DB] Success");
 
-      // =========================
-      // STAGE 4 — GENERATE PRISMA
-      // =========================
+  
+      // GENERATE PRISMA
 
       console.log("\n=========================");
       console.log("[Prisma] Generating prisma schema...");
@@ -115,9 +113,9 @@ const startServer = async () => {
 
       console.log("[Prisma] schema.prisma created");
 
-      // =========================
-      // STAGE 5 — RUN MIGRATION
-      // =========================
+     
+      // RUN MIGRATION
+    
 
       console.log("\n=========================");
       console.log("[Prisma] Running migration...");
@@ -127,9 +125,9 @@ const startServer = async () => {
 
       console.log("[Prisma] Migration completed");
 
-      // =========================
-      // STAGE 6 — API SCHEMA
-      // =========================
+     
+      //  API SCHEMA
+    
 
       console.log("\n=========================");
       console.log("[API] Generating API schema...");
@@ -140,9 +138,9 @@ const startServer = async () => {
 
       console.log("[API] Success");
 
-      // =========================
+    
       // SAVE RUNTIME ROUTES
-      // =========================
+      
 
       setRuntimeRoutes(api.routes || []);
 
@@ -153,9 +151,9 @@ const startServer = async () => {
         getRuntimeRoutes()
       );
 
-      // =========================
-      // STAGE 7 — UI SCHEMA
-      // =========================
+     
+      // UI SCHEMA
+      
 
       console.log("\n=========================");
       console.log("[UI] Generating UI schema...");
@@ -166,9 +164,9 @@ const startServer = async () => {
 
       console.log("[UI] Success");
 
-      // =========================
-      // STAGE 8 — VALIDATION
-      // =========================
+   
+      // VALIDATION
+     
 
       console.log("\n=========================");
       console.log(
@@ -181,9 +179,9 @@ const startServer = async () => {
 
       console.log("[Validation] Completed");
 
-      // =========================
-      // STAGE 9 — REPAIR ENGINE
-      // =========================
+      
+      // REPAIR ENGINE
+    
 
       let repairedDb = null;
 
@@ -213,9 +211,7 @@ const startServer = async () => {
 
       }
 
-      // =========================
-      // FINAL RESPONSE
-      // =========================
+ 
 
       return {
 
@@ -277,10 +273,9 @@ const startServer = async () => {
 
   });
 
-  // =========================
+  
   // DYNAMIC RUNTIME ROUTES
-  // =========================
-
+ 
   app.all("/runtime/*", async (request, reply) => {
 
     try {
@@ -317,9 +312,9 @@ const startServer = async () => {
 
         });
 
-      // =========================
+     
       // ROUTE NOT FOUND
-      // =========================
+      
 
       if (!matchedRoute) {
 
@@ -341,9 +336,9 @@ const startServer = async () => {
 
       }
 
-      // =========================
+    
       // DYNAMIC DATABASE EXECUTION
-      // =========================
+   
 
       const body =
         request.body as any;
@@ -355,9 +350,9 @@ const startServer = async () => {
           body
         );
 
-      // =========================
+   
       // SUCCESS RESPONSE
-      // =========================
+      
 
       return {
 
@@ -388,9 +383,9 @@ const startServer = async () => {
 
   });
 
-  // =========================
+ 
   // SHOW ALL RUNTIME ROUTES
-  // =========================
+ 
 
   app.get("/runtime-routes", async () => {
 
@@ -404,9 +399,9 @@ const startServer = async () => {
 
   });
 
-  // =========================
+
   // TEST DATABASE ROUTE
-  // =========================
+ 
 
   app.get("/db-test", async () => {
 
@@ -423,10 +418,9 @@ const startServer = async () => {
 
   });
 
-  // =========================
+ 
   // CREATE TEST USER
-  // =========================
-
+  
   app.post("/create-user", async (request) => {
 
     const body = request.body as {
@@ -454,10 +448,9 @@ const startServer = async () => {
 
   });
 
-  // =========================
+ 
   // START SERVER
-  // =========================
-
+  
   try {
 
     await app.listen({
