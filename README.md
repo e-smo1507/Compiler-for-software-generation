@@ -32,39 +32,33 @@ System Architecture
 User Prompt
       │
       ▼
-┌────────────────────┐
 │ Intent Extraction  │
-└────────────────────┘
       │
       ▼
-┌────────────────────┐
 │ System Design      │
-└────────────────────┘
       │
       ▼
-┌────────────────────┐
 │ Schema Generation  │
 │                    │
 │ • UI Schema        │
 │ • API Schema       │
 │ • DB Schema        │
 │ • Auth Rules       │
-└────────────────────┘
       │
       ▼
-┌────────────────────┐
+
 │ Validation Engine  │
-└────────────────────┘
+
       │
       ▼
-┌────────────────────┐
+
 │ Repair Engine      │
-└────────────────────┘
+
       │
       ▼
-┌────────────────────┐
+
 │ Runtime Generator  │
-└────────────────────┘
+
       │
       ▼
  Executable App 
